@@ -10,7 +10,6 @@ jobs:
   render:
     runs-on: ubuntu-latest
     timeout-minutes: 12
-    environment: render-manual
     env:
       API_URL: ${{ vars.API_URL }}
       WORKER_TOKEN: ${{ secrets.WORKER_TOKEN }}

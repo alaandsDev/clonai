@@ -1,6 +1,6 @@
 # Clonai — primeira versão gratuita
 
-Estúdio privado para criar roteiros de motivação, revisar, renderizar vídeos e baixar para publicação **manual**. Implementação local funcional; configuração de nuvem preparada, mas **implantada na Cloudflare, com validação funcional online pendente**. Foram implantados Worker e Pages, e aplicadas as migrações no D1 fornecido pelo proprietário. Nenhum plano pago ou assinatura R2 foi ativado.
+Estúdio privado para criar roteiros de motivação, revisar, renderizar vídeos e baixar para publicação **manual**. Implementação local funcional e painel implantado na Cloudflare; renderização remota ainda em configuração. Foram implantados Worker e Pages, e aplicadas as migrações no D1 fornecido pelo proprietário. Nenhum plano pago ou assinatura R2 foi ativado.
 
 ## O que foi entregue
 
@@ -113,6 +113,6 @@ Nesta máquina Linux, foi usado o Chromium já instalado via `CHROMIUM_PATH=/usr
 
 ## Nuvem e custos
 
-Veja [implantação](docs/implantacao.md), [cotas e dependências](docs/cotas.md) e [validação](docs/validacao.md). A hospedagem desacoplada permitirá painel com o PC desligado **depois de uma implantação real**; o servidor local atual não oferece essa disponibilidade.
+Veja [implantação](docs/implantacao.md), [cotas e dependências](docs/cotas.md) e [validação](docs/validacao.md). O painel já está hospedado na Cloudflare e pode ser acessado com o PC desligado. A renderização remota ainda depende da configuração do Actions.
 
 As páginas oficiais consultadas retornaram 403 no proxy. Posteriormente, as telas da conta fornecidas pelo proprietário mostraram GitHub Free com 2.000 minutos e 0,5 GB de Actions, sem consumo, e orçamento de Actions US$ 0 com Usage blocked. Workers mostrou 100 mil requisições/dia; D1 mostrou limites da conta; R2 exigiu assinatura e foi descartado. Não há promessa de custo zero absoluto ou solução pronta para produção. O fluxo remoto agora dispensa R2: o painel abre o pacote ZIP privado no GitHub, exigindo login e acesso ao repositório. Esse pacote não é um link MP4 público nem um arquivo permanente; baixe antes de expirar. Nenhum token GitHub é enviado ao frontend ou armazenado no Worker. Se uma ativação exigir cartão ou plano pago, interrompa essa etapa.
