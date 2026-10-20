@@ -1,0 +1,55 @@
+name: Renderização manual (artefato privado)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: clonai-render
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: render-manual
+    env:
+      API_URL: ${{ vars.API_URL }}
+      WORKER_TOKEN: ${{ secrets.WORKER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pré-requisitos (consomem a franquia de minutos)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install -r requirements-voice.txt
+      - name: Processar uma tarefa autorizada
+        id: render
+        env:
+          DELIVERY_MODE: github-artifact
+        run: |
+          test -n "$API_URL" && test -n "$WORKER_TOKEN"
+          npm run render
+      - name: Armazenar pacote privado por um dia
+        if: steps.render.outputs.has_job == 'true'
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.render.outputs.artifact_name }}
+          path: .data/export/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          include-hidden-files: false
+      - name: Confirmar upload no backend
+        if: steps.render.outputs.has_job == 'true'
+        env:
+          ARTIFACT_ID: ${{ steps.upload.outputs.artifact-id }}
+        run: node scripts/artifact-finalize.ts
+      - name: Registrar falha sem duplicar tarefa
+        if: failure()
+        run: node scripts/artifact-finalize.ts fail
