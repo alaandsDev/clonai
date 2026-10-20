@@ -1,3 +1,4 @@
+import { apiUrl } from "./api-url.ts";
 import { render } from "./render.ts";
 import {
   readFile,
@@ -9,19 +10,10 @@ import {
 } from "node:fs/promises";
 import { resolve } from "node:path";
 const runDirectory = resolve(process.env.RUN_DIRECTORY || ".data");
-const base = process.env.API_URL || "http://127.0.0.1:8787";
+const base = apiUrl(process.env.API_URL, process.env.GITHUB_ACTIONS === "true");
 const token = process.env.WORKER_TOKEN;
 if (!token || token.length < 32)
   throw Error("Configure WORKER_TOKEN (32+ caracteres)");
-const parsed = new URL(base);
-if (
-  parsed.protocol !== "https:" &&
-  !(
-    parsed.protocol === "http:" &&
-    ["127.0.0.1", "localhost"].includes(parsed.hostname)
-  )
-)
-  throw Error("API remota exige HTTPS");
 async function call(path: string, body?: unknown) {
   const r = await fetch(base + path, {
     method: "POST",
@@ -42,8 +34,8 @@ if (!job) {
   process.exit(0);
 }
 if (process.env.DELIVERY_MODE === "github-artifact") {
-  if (process.env.GITHUB_ACTIONS !== "true" || !process.env.GITHUB_OUTPUT)
-    throw Error("Modo artefato exige execução GitHub Actions");
+  if (!process.env.GITHUB_OUTPUT)
+    throw Error("Modo artefato exige GITHUB_OUTPUT para confirmar o pacote");
   await mkdir(runDirectory, { recursive: true });
   await writeFile(
     resolve(runDirectory, "runner-state.json"),

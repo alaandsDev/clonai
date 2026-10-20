@@ -39,7 +39,7 @@ test("runner prepara pacote real isolado, sem segredo e sem concluir antes do up
           API_URL: `http://127.0.0.1:${port}`,
           WORKER_TOKEN: token,
           DELIVERY_MODE: "github-artifact",
-          GITHUB_ACTIONS: "true",
+          GITHUB_ACTIONS: "false",
           GITHUB_OUTPUT: join(dir, "output"),
           RUN_DIRECTORY: dir,
         },
